@@ -5,8 +5,12 @@
 //  Created by 徐纪光 on 16/5/3.
 //  Copyright © 2016年 jiguang. All rights reserved.
 //
-
+//#define BACKGROUND_COLOR [UIColor colorWithRed:163.0/255.0 green:205.0/255.0 blue:156.0/255.0 alpha:1.0]
+#define BACKGROUND_COLOR [UIColor whiteColor]
 #import "AppDelegate.h"
+#import "JGTabBarController.h"
+#import "SDWebImage/SDImageCache.h"
+#import <AFNetworking.h>
 
 @interface AppDelegate ()
 
@@ -16,7 +20,14 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.window.rootViewController = [[JGTabBarController alloc] init];
+    [self.window makeKeyAndVisible];
+    NSString *bundledPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"CustomPathImages"];
+    [[SDImageCache sharedImageCache] addReadOnlyCachePath:bundledPath];
+    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
+    
+    [[UINavigationBar appearance] setBarTintColor:BACKGROUND_COLOR];
     return YES;
 }
 
