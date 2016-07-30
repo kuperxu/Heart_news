@@ -7,6 +7,7 @@
 //
 #define AUTHOR_COLOR [UIColor colorWithRed:150.0/255.0 green:217.0/255.0 blue:247.0/255.0 alpha:1.0]
 #import "JGSetupVC.h"
+#import "JGOboutUsVC.h"
 #import <Masonry.h>
 #import "SDWebImageManager.h"
 
@@ -21,7 +22,7 @@
 - (void)viewDidLoad{
     [super viewDidLoad];
     
-    _array=@[@"夜间模式",@"智能无图",@"关于我们",@"清空缓存"];
+    _array=@[@[@"夜间模式",@"智能无图",@"离线下载"],@[@"清空缓存",@"版本更新",@"关于我们"]];
     [self initView];
 }
 - (void)viewWillAppear:(BOOL)animated{
@@ -34,15 +35,15 @@
     _tabView.dataSource=self;
     _tabView.delegate=self;
     _tabView.scrollEnabled=NO;
-//    _tabView.translatesAutoresizingMaskIntoConstraints=NO;
+    //    _tabView.translatesAutoresizingMaskIntoConstraints=NO;
     [self.view addSubview:_tabView];
     [_tabView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.edges.equalTo(self.view);
+        //        make.edges.equalTo(self.view);
         make.left.and.right.equalTo(self.view);
         make.top.mas_equalTo(64);
         make.bottom.mas_equalTo(49);
     }];
-
+    
 }
 
 
@@ -51,13 +52,13 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return _array.count;
+    return 3;
     
 }
 
@@ -68,9 +69,9 @@
     //   自定义cell类
     UITableViewCell *cell= [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     
-    if (indexPath.row==0||indexPath.row==1) {
+    if (indexPath.section == 0) {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.textLabel.text=_array[indexPath.row];
+        cell.textLabel.text=_array[indexPath.section][indexPath.row];
         cell.backgroundColor=[UIColor whiteColor];
         //大小固定，设置无效
         UISwitch *switchButton = [[UISwitch alloc] initWithFrame:CGRectZero];
@@ -87,13 +88,13 @@
         
         
         NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
-        BOOL notion=[user boolForKey:@"notion"];
-        BOOL show=[user boolForKey:@"show"];
-        
+        BOOL night = [user boolForKey:@"night"];
+        BOOL noImage = [user boolForKey:@"noimage"];
+        BOOL download = [user boolForKey:@"download"];
         
         if (indexPath.row==0) {
             switchButton.tag=1;
-            if (notion) {
+            if (night) {
                 switchButton.on=YES;
             }
             else{
@@ -102,7 +103,16 @@
         }
         if (indexPath.row==1) {
             switchButton.tag=2;
-            if (show) {
+            if (noImage) {
+                switchButton.on=YES;
+            }
+            else{
+                switchButton.on=NO;
+            }
+        }
+        if (indexPath.row==2) {
+            switchButton.tag=3;
+            if (download) {
                 switchButton.on=YES;
             }
             else{
@@ -111,10 +121,10 @@
         }
     }else{
         
-        cell.textLabel.text=_array[indexPath.row];
+        cell.textLabel.text=_array[indexPath.section][indexPath.row];
         cell.backgroundColor=[UIColor whiteColor];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        if(indexPath.row == 3){
+        if(indexPath.row == 0){
             UILabel *label = ({
                 UILabel *view = [[UILabel alloc]init];
                 [cell.contentView addSubview:view];
@@ -137,8 +147,11 @@
 
 -(void)delete{
     NSString *path = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"Caches/xiyouMobile.Heart-news"];
+    
     NSFileManager *fileManager = [NSFileManager defaultManager];
     [[SDImageCache sharedImageCache]clearDisk];
+    [fileManager removeItemAtPath:path error:nil];
+    path = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"Caches/tag.archiver"];
     [fileManager removeItemAtPath:path error:nil];
     [_tabView reloadData];
 }
@@ -190,16 +203,22 @@
     
     if (sender.tag==1) {
         if (sender.on) {
-            [user setBool:1 forKey:@"notion"];
+            [user setBool:1 forKey:@"night"];
         }else{
-            [user setBool:0 forKey:@"notion"];
+            [user setBool:0 forKey:@"night"];
         }
     }
-    else{
+    else if(sender.tag == 2){
         if (sender.on) {
-            [user setBool:1 forKey:@"show"];
+            [user setBool:1 forKey:@"noimage"];
         }else{
-            [user setBool:0 forKey:@"show"];
+            [user setBool:0 forKey:@"noimage"];
+        }
+    }else{
+        if (sender.on) {
+            [user setBool:1 forKey:@"download"];
+        }else{
+            [user setBool:0 forKey:@"download"];
         }
     }
     [user synchronize];
@@ -209,31 +228,50 @@
 }
 #pragma  mark - Table view delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 60;
+    return 45;
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 20;
+    if(section == 0)
+        return 30;
+    else
+        return 15;
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row==0) {
+    if(indexPath.section == 1){
+        
+        if (indexPath.row==0) {
+            [self delete];
+        }
+        //    else if(indexPath.row==1){
+        //        return ;
+        //    }
+        else if(indexPath.row==1){
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"通知" message:@"暂无可用更新" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *okaction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                ;
+            }];
+            [alert addAction:okaction];
+            [self presentViewController:alert animated:NO completion:^{
+                ;
+            }];
+        }
+        else if (indexPath.row==2) {
+            JGOboutUsVC *faqVC=[[JGOboutUsVC alloc] init];
+            [self.navigationController pushViewController:faqVC animated:YES];
+        }
+        
+    }else
         return ;
-    }
-//    else if(indexPath.row==1){
-//        return ;
-//    }
-//    else if (indexPath.row==2) {
-//        FAQViewController *faqVC=[[FAQViewController alloc] init];
-//        [self.navigationController pushViewController:faqVC animated:YES];
-//    }
-    else if(indexPath.row==3){
-        [self delete];
-    }
-    else{
-    
-        [self delete];
-    }
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    if(section == 0)
+        return @"通用设置";
+    else
+        return @"应用设置";
+}
+
 
 
 @end

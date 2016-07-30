@@ -10,8 +10,9 @@
 @class HotDetail;
 
 
-@interface HotModel : NSObject
-- (NSURLSessionDataTask *)globalTimelinePostsWithBlock:(void (^)(NSArray *posts, NSError *error))block;
+@interface HotModel : NSObject<NSURLSessionDataDelegate>
+//- (NSURLSessionDataTask *)globalTimelinePostsWithBlock:(void (^)(NSArray *posts, NSError *error))block;
+- (NSURLSessionDataTask *)globalTimelinePostsWithPage:(NSInteger)page Block:(void (^)(NSArray *posts, NSError *error))block;
 + (instancetype)shareInstance;
 @property (nonatomic, copy)NSArray<HotDetail *> *data;
 

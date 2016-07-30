@@ -9,8 +9,9 @@
 #define BACKGROUND_COLOR [UIColor whiteColor]
 #import "AppDelegate.h"
 #import "JGTabBarController.h"
-#import "SDWebImage/SDImageCache.h"
-#import <AFNetworking.h>
+
+
+
 
 @interface AppDelegate ()
 
@@ -23,12 +24,63 @@
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.rootViewController = [[JGTabBarController alloc] init];
     [self.window makeKeyAndVisible];
-    NSString *bundledPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"CustomPathImages"];
-    [[SDImageCache sharedImageCache] addReadOnlyCachePath:bundledPath];
-    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
     
-    [[UINavigationBar appearance] setBarTintColor:BACKGROUND_COLOR];
+    
+    
+    
+//    [[UINavigationBar appearance] setBarTintColor:BACKGROUND_COLOR];
+//    [[UIApplication sharedApplication] registerForRemoteNotificationTypes: UIRemoteNotificationTypeBadge |UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert];
+    if([[[UIDevice currentDevice]systemVersion]floatValue] >=8.0)
+        
+    {
+        
+        [[UIApplication sharedApplication]registerUserNotificationSettings:[UIUserNotificationSettings
+                                                                           settingsForTypes:(UIUserNotificationTypeSound|UIUserNotificationTypeAlert|UIUserNotificationTypeBadge)
+                                                                           categories:nil]];
+        
+        [[UIApplication sharedApplication]registerForRemoteNotifications];
+        
+    }else{
+        //这里还是原来的代码
+        //注册启用push
+        [[UIApplication sharedApplication]registerForRemoteNotificationTypes:
+         (UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge)];
+        
+    }
     return YES;
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)pToken {
+    
+    NSLog(@"regisger success:%@", pToken);
+    
+    //注册成功，将deviceToken保存到应用服务器数据库中
+    
+}
+
+
+
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
+    // 处理推送消息
+//    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"通知" message:@"远程通知"  preferredStyle:UIAlertControllerStyleAlert];
+//    UIAlertAction *okaction = [UIAlertAction actionWithTitle:@"CLOSE" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//        ;
+//    }];
+//    [alert addAction:okaction];
+//    [self.roo presentViewController:alert animated:NO completion:^{
+//        ;
+//    }];
+    NSLog(@"i'm info%@", userInfo);
+}
+//- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
+//    
+//}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+    NSLog(@"Regist fail%@",error);
+    
+    
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

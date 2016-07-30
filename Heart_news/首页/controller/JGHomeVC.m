@@ -7,17 +7,7 @@
 //
 
 #import "JGHomeVC.h"
-#import "AdView.h"
-#import "HomeModel.h"
-#import "GMDCircleLoader.h"
-#import "DetailModel.h"
-#import <Masonry.h>
-#import <UIRefreshControl+AFNetworking.h>
-#import "HotModel.h"
-#import "HotDetail.h"
-#import "UIImageView+WebCache.h"
-#import "DetailCell.h"
-#import "WebDetailVC.h"
+
 
 @interface JGHomeVC ()
 <UITableViewDelegate,
@@ -26,18 +16,22 @@ UITableViewDataSource
     AdView * adView;
     UITableView *table;
     HomeModel *model;
-    UIRefreshControl *refreshControl;
     HotModel *hotmodel;
 }
 
 
 @end
 @implementation JGHomeVC
+NSInteger page;
 
+- (void)viewWillAppear:(BOOL)animated{
+    self.navigationController.navigationBar.alpha = 1.f;
+}
 - (void)reload:(__unused id)sender {
     self.navigationItem.rightBarButtonItem.enabled = NO;
-    
-    NSURLSessionTask *task = [model globalTimelinePostsWithBlock:^(NSArray *posts, NSError *error) {
+//    修改将task结果去掉
+    model.data = nil;
+    [model globalTimelinePostsWithBlock:^(NSArray *posts, NSError *error) {
         if (!error) {
             NSMutableArray *imagesURL = [NSMutableArray array];
             NSMutableArray *titles = [NSMutableArray array];
@@ -48,34 +42,28 @@ UITableViewDataSource
             
             adView.adTitleArray = titles;
             adView.imageLinkURL = imagesURL;
-//            NSLog(@"%@,---%@",[adView class],[NSThread currentThread]);
-            
-//            [GMDCircleLoader hideFromView:self.view animated:NO];
+
+            [table.mj_header endRefreshing];
         }
     }];
-    [hotmodel globalTimelinePostsWithBlock:^(NSArray *posts, NSError *error) {
-//        NSLog(@"%@--%@",hotmodel,[[HotModel alloc]init]);
+    page =1;
+    [hotmodel globalTimelinePostsWithPage:page Block:^(NSArray *posts, NSError *error) {
         [table reloadData];
     }];
-    
-    [refreshControl setRefreshingWithStateOfTask:task];
+
 }
 
 
 - (void)viewDidLoad{
     [super viewDidLoad];
-
-    
     hotmodel = [HotModel shareInstance];
     model = [HomeModel shareInstance];
-    
-    
     
     [self initTableview];
     
     [self initScrolleview];
     
-//    self.automaticallyAdjustsScrollViewInsets = NO;
+    //    self.automaticallyAdjustsScrollViewInsets = NO;
     
     [self reload:nil];
 }
@@ -84,9 +72,9 @@ UITableViewDataSource
     CGFloat width = [UIScreen mainScreen].bounds.size.width;
     
     NSArray *imagesURL = @[
-                           @"https://ss0.baidu.com/-Po3dSag_xI4khGko9WTAnF6hhy/super/whfpf%3D425%2C260%2C50/sign=a41eb338dd33c895a62bcb3bb72e47c2/5fdf8db1cb134954a2192ccb524e9258d1094a1e.jpg",
-                           @"http://c.hiphotos.baidu.com/image/w%3D400/sign=c2318ff84334970a4773112fa5c8d1c0/b7fd5266d0160924c1fae5ccd60735fae7cd340d.jpg",
-                           @"http://pic14.nipic.com/20110522/7411759_164157418126_2.jpg"
+                           @"http://image.xinli001.com/20160108/083644mzfz746b6ubo9lsl.jpg",
+                           @"http://image.xinli001.com/20160607/063410od0v9fhhf2c1ofac.jpg",
+                           @"http://image.xinli001.com/20160606/113934bcbfzrxqpqp4ylba.jpg"
                            ];
     
     // 情景三：图片配文字(可选)
@@ -118,12 +106,19 @@ UITableViewDataSource
     };
     //    [self.view addSubview:adView];
     table.tableHeaderView = adView;
+    //    table.mj_header = [MJRefreshNormalHeader ]
     
-    refreshControl = [[UIRefreshControl alloc] initWithFrame:CGRectMake(0.0f, 0.0f, table.frame.size.width, 100.0f)];
-    [refreshControl addTarget:self action:@selector(reload:) forControlEvents:UIControlEventValueChanged];
-    [table.tableHeaderView addSubview:refreshControl];
+    
 }
+- (void)loadMoreData{
 
+    page ++;
+    [hotmodel globalTimelinePostsWithPage:page Block:^(NSArray *posts, NSError *error) {
+        [table reloadData];
+        [table.mj_footer endRefreshing];
+        NSLog(@"%@",[NSThread currentThread]);
+    }];
+}
 
 - (void)initTableview{
     table = [[UITableView alloc]initWithFrame:self.view.frame style:UITableViewStylePlain];
@@ -136,7 +131,36 @@ UITableViewDataSource
     [table mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(64, 0, 49, 0));
     }];
+    
+    // 设置回调（一旦进入刷新状态，就调用target的action，也就是调用self的loadNewData方法）
+    MJRefreshNormalHeader *header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(reload:)];
+    
+    // 设置文字
+    [header setTitle:@"Pull down to refresh" forState:MJRefreshStateIdle];
+    [header setTitle:@"Release to refresh" forState:MJRefreshStatePulling];
+    [header setTitle:@"Loading ..." forState:MJRefreshStateRefreshing];
+    
+    // 设置字体
+    header.stateLabel.font = [UIFont systemFontOfSize:15];
+    header.lastUpdatedTimeLabel.font = [UIFont systemFontOfSize:14];
+    
+    // 设置颜色
+    header.stateLabel.textColor = [UIColor grayColor];
+    header.lastUpdatedTimeLabel.textColor = [UIColor redColor];
+    
+    // 马上进入刷新状态
+    [header beginRefreshing];
+    
+    // 设置刷新控件
+    table.mj_header = header;
+    
+    __unsafe_unretained __typeof(self) weakSelf = self;
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    table.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:weakSelf refreshingAction:@selector(loadMoreData)];
 }
+
+
 //delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     return 1;
@@ -149,13 +173,31 @@ UITableViewDataSource
     return UITableViewAutomaticDimension;
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    //1.设置self.tabBarController.tabBar.hidden=YES;
+    
+//    self.tabBarController.tabBar.hidden=YES;
+    
+    //2.如果在push跳转时需要隐藏tabBar，设置self.hidesBottomBarWhenPushed=YES;
+    
+//    self.hidesBottomBarWhenPushed=YES;
+    
+    
     WebDetailVC *vc = [[WebDetailVC alloc]init];
     vc.hotModel = hotmodel.data[indexPath.row];
     [self.navigationController pushViewController:vc animated:NO];
     
     
+//    self.hidesBottomBarWhenPushed=NO;
+    
+    //并在push后设置self.hidesBottomBarWhenPushed=NO;
+    //这样back回来的时候，tabBar会恢复正常显示。
+    
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
+
+
+
 
 //datasource
 

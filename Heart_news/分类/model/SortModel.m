@@ -17,6 +17,8 @@
 
 @implementation SortModel
 
+
+static SortModel *one;
 + (instancetype)shareInstance{
     static SortModel *once;
     static dispatch_once_t onceToken;
@@ -26,7 +28,7 @@
     return once;
 }
 
-+ (NSURLSessionDataTask *)globalTimelinePostsWithSort:(NSString *)sort Block:(void (^)(SortModel *, NSError *))block{
++ (NSURLSessionDataTask *)globalTimelinePostsWithSort:(NSString *)sort Page:(NSInteger)page Block:(void (^)(SortModel *posts, NSError *error))block{
     NSDictionary *SortDIC = @{
                               @"全部":@"",
                               @"婚恋":@"marry",
@@ -36,12 +38,13 @@
                               @"亲子":@"family",
                               @"最新":@""
                               };
-    return [[AFHTTPSessionManager manager] GET:[NSString stringWithFormat:@"http://www.varpm.com:3002/v1/article/getList?sort=%@",SortDIC[sort]] parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
+    
+    return [[AFHTTPSessionManager manager] GET:[NSString stringWithFormat:@"http://www.varpm.com:3002/v1/article/getList?sort=%@&page=%ld",SortDIC[sort],page] parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         ;
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"%@",responseObject);
         NSDictionary *dic = (NSDictionary *)responseObject;
-        SortModel *one = [[self alloc]init];
+        if(page == 1)
+            one = [[self alloc]init];
         [one serializationDataWith:dic];
         if (block) {
             block(one, nil);

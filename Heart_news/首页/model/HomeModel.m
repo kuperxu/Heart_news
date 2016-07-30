@@ -19,6 +19,7 @@ static HomeModel *once;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         once = [[HomeModel alloc]init];
+        [[AFNetworkReachabilityManager sharedManager] startMonitoring];
     });
     
     return once;
@@ -30,6 +31,7 @@ static HomeModel *once;
         ;
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
 //        NSLog(@"%@",responseObject);
+//        _data = [NSArray array];
         NSDictionary *dic = (NSDictionary *)responseObject;
         [self serializationDataWith:dic];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {

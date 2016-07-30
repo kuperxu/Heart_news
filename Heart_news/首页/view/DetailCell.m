@@ -37,11 +37,11 @@
     if (!self) {
         return nil;
     }
-//    self.textLabel.adjustsFontSizeToFitWidth = YES;
-//    self.textLabel.textColor = [UIColor darkGrayColor];
+    //    self.textLabel.adjustsFontSizeToFitWidth = YES;
+    //    self.textLabel.textColor = [UIColor darkGrayColor];
     
-
-//    [self addSubview:self.detailTextLabel];
+    
+    //    [self addSubview:self.detailTextLabel];
     
     [self createView];
     
@@ -52,7 +52,7 @@
         make.size.width.mas_equalTo(70);
         //        make.size.mas_equalTo(CGSizeMake(50, 50));
     }];
-//self.imageView.frame = CGRectMake(200.0f, 10.0f, 50.0f, 50.0f);
+    //self.imageView.frame = CGRectMake(200.0f, 10.0f, 50.0f, 50.0f);
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(10);
         make.right.mas_equalTo(10);
@@ -64,11 +64,11 @@
         make.left.mas_equalTo(10);
         make.right.mas_equalTo(-90);
         make.top.equalTo(self.titleLabel.mas_bottom);
-        make.bottom.equalTo(self.tagLabel.mas_top);
+        make.bottom.mas_equalTo(-32);
     }];
     [self.tagLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(10);
-//        make.right.mas_equalTo(-90);
+        //        make.right.mas_equalTo(-90);
         make.height.mas_equalTo(20);
         make.bottom.mas_equalTo(-8);
     }];
@@ -78,12 +78,12 @@
         make.height.mas_equalTo(20);
         make.bottom.mas_equalTo(-8);
     }];
-//    self.textLabel.frame = CGRectMake(70.0f, 6.0f, 240.0f, 20.0f);
+    //    self.textLabel.frame = CGRectMake(70.0f, 6.0f, 240.0f, 20.0f);
     
-//    CGRect detailTextLabelFrame = CGRectOffset(self.textLabel.frame, 0.0f, 25.0f);
-//    CGFloat calculatedHeight = [[self class] detailTextHeight:self.model.title];
-//    detailTextLabelFrame.size.height = calculatedHeight;
-//    self.detailTextLabel.frame = detailTextLabelFrame;
+    //    CGRect detailTextLabelFrame = CGRectOffset(self.textLabel.frame, 0.0f, 25.0f);
+    //    CGFloat calculatedHeight = [[self class] detailTextHeight:self.model.title];
+    //    detailTextLabelFrame.size.height = calculatedHeight;
+    //    self.detailTextLabel.frame = detailTextLabelFrame;
     
     return self;
 }
@@ -101,7 +101,6 @@
     self.contentLabel = contentLabel;
     
     UIImageView *contentImageView = [[UIImageView alloc] init];
-    contentImageView.contentMode = UIViewContentModeScaleAspectFit;
     [self.contentView addSubview:contentImageView];
     self.contentImageView = contentImageView;
     
@@ -127,12 +126,14 @@
     
     self.titleLabel.font = [UIFont systemFontOfSize:12.f];
     [self.titleLabel setTextColor:AUTHOR_COLOR];
-    self.contentLabel.font = [UIFont systemFontOfSize:20.0f];
+    
+    
+    self.contentLabel.font = [UIFont systemFontOfSize:17.0f];
     self.contentLabel.numberOfLines = 0;
     self.selectionStyle = UITableViewCellSelectionStyleGray;
     [self.contentImageView setContentMode:UIViewContentModeScaleAspectFill];
     self.contentImageView.clipsToBounds = YES;
-//    这个是不是很耗费性能一会真机测试看下，不然就拿image直接绘制
+    //    这个是不是很耗费性能一会真机测试看下，不然就拿image直接绘制
 }
 
 - (void)setModel:(HotDetail *)model{
@@ -141,17 +142,21 @@
     
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc]init];
     style.lineSpacing = 8.f;
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]initWithString:_model.title];
-    //        nameLabel.text = [JGUserModel shareUserModel].userName;
+    NSMutableAttributedString *attributedString;
+    if(_model.title){
+        attributedString = [[NSMutableAttributedString alloc]initWithString:_model.title];
+    }else{
+        attributedString = [[NSMutableAttributedString alloc]initWithString:@"莫言"];
+    }
+    
+    
     NSRange range = NSMakeRange(0, _model.title.length);
-    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:20] range:range];
-//    [attributedString addAttribute:NSForegroundColorAttributeName value:AUTHOR_COLOR range:range];
+    //    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:20] range:range];
+    //    [attributedString addAttribute:NSForegroundColorAttributeName value:AUTHOR_COLOR range:range];
     [attributedString addAttribute:NSParagraphStyleAttributeName value:style range:range];
     
     
     self.titleLabel.text = _model.author;
-    self.contentLabel.font = [UIFont systemFontOfSize:20.f];
-    self.contentLabel.numberOfLines = 0;
     self.contentLabel.attributedText = attributedString;
     
     
@@ -160,16 +165,16 @@
     UIImage *unload = [UIImage imageNamed:@"unload"];
     if(defaultimage){
         [self.contentImageView sd_setImageWithURL:[NSURL URLWithString:_model.image] placeholderImage:unload];
-    }else if ((![[NSUserDefaults standardUserDefaults]objectForKey:@""]) || mgr.isReachableViaWiFi) {
+    }else if ((![[NSUserDefaults standardUserDefaults]objectForKey:@"noimage"]) || mgr.isReachableViaWiFi) {
         [self.contentImageView sd_setImageWithURL:[NSURL URLWithString:_model.image] placeholderImage:unload];
     }else{
         [self.contentImageView sd_setImageWithURL:nil placeholderImage:unload];
     }
-//    [self.contentImageView sd_setImageWithURL:[NSURL URLWithString:_model.image] placeholderImage:nil];
+    //    [self.contentImageView sd_setImageWithURL:[NSURL URLWithString:_model.image] placeholderImage:nil];
     self.tagLabel.text = [NSString stringWithFormat:@" %@ ",_model.tags[0]];
     self.viewLabel.text = [NSString stringWithFormat:@" 阅读 %@",_model.view];
     
-//    [self setNeedsLayout];
+    //    [self setNeedsLayout];
 }
 
 

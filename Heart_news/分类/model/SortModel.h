@@ -11,7 +11,9 @@
 
 @interface SortModel : NSObject
 
-+ (NSURLSessionDataTask *)globalTimelinePostsWithSort:(NSString *)sort Block:(void (^)(SortModel *posts, NSError *error))block;
+//+ (NSURLSessionDataTask *)globalTimelinePostsWithSort:(NSString *)sort Block:(void (^)(SortModel *posts, NSError *error))block;
++ (NSURLSessionDataTask *)globalTimelinePostsWithSort:(NSString *)sort Page:(NSInteger)page Block:(void (^)(SortModel *posts, NSError *error))block;
+
 + (instancetype)shareInstance;
 @property (nonatomic, copy)NSArray<HotDetail *> *data;
 

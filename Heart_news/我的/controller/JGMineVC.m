@@ -24,18 +24,20 @@
 @implementation JGMineVC
 - (void)viewDidLoad{
     [super viewDidLoad];
-    CAGradientLayer *layer = [CAGradientLayer new];
-    _inputColor0 = [UIColor whiteColor];
-    _inputColor1 = AUTHOR_COLOR;
-    _inputPoint0 = CGPointMake(0, 0);
-    _inputPoint1 = CGPointMake(0, 1);
-
-    layer.colors = @[(__bridge id)_inputColor0.CGColor, (__bridge id)_inputColor1.CGColor];
-    layer.startPoint = _inputPoint0;
-    layer.endPoint = _inputPoint1;
-    layer.frame = self.view.bounds;
-//        self.view.layer = layer;
-    [self.view.layer addSublayer:layer];
+//    CAGradientLayer *layer = [CAGradientLayer new];
+//    _inputColor0 = [UIColor whiteColor];
+//    _inputColor1 = AUTHOR_COLOR;
+//    _inputPoint0 = CGPointMake(0, 0);
+//    _inputPoint1 = CGPointMake(0, 1);
+//
+//    layer.colors = @[(__bridge id)_inputColor0.CGColor, (__bridge id)_inputColor1.CGColor];
+//    layer.startPoint = _inputPoint0;
+//    layer.endPoint = _inputPoint1;
+//    layer.frame = self.view.bounds;
+////        self.view.layer = layer;
+//    [self.view.layer addSublayer:layer];
+    
+    self.view.backgroundColor  = [UIColor whiteColor];
     
     
     UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -7,7 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "AdView.h"
+#import "HomeModel.h"
+#import "GMDCircleLoader.h"
+#import "DetailModel.h"
+#import <Masonry.h>
+#import "HotModel.h"
+#import "HotDetail.h"
+#import "UIImageView+WebCache.h"
+#import "DetailCell.h"
+#import "WebDetailVC.h"
+#import <MJRefresh.h>
 @interface JGHomeVC : UIViewController
 
 @end
