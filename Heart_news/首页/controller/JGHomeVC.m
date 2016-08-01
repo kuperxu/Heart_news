@@ -116,7 +116,6 @@ NSInteger page;
     [hotmodel globalTimelinePostsWithPage:page Block:^(NSArray *posts, NSError *error) {
         [table reloadData];
         [table.mj_footer endRefreshing];
-        NSLog(@"%@",[NSThread currentThread]);
     }];
 }
 

@@ -26,8 +26,6 @@
     [self.window makeKeyAndVisible];
     
     
-    
-    
 //    [[UINavigationBar appearance] setBarTintColor:BACKGROUND_COLOR];
 //    [[UIApplication sharedApplication] registerForRemoteNotificationTypes: UIRemoteNotificationTypeBadge |UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert];
     if([[[UIDevice currentDevice]systemVersion]floatValue] >=8.0)
@@ -53,9 +51,61 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)pToken {
     
     NSLog(@"regisger success:%@", pToken);
+
+//    [[NSUserDefaults standardUserDefaults]setObject:@"divcetoken" forKey:pToken];
     
+//    NSLog(@"方式1：%@", deviceTokenString1);
+//    NSLog(@"%@",str);
+    
+//    NSString *deviceTokenString2 = [[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<"withString:@""]
+//                                     
+//                                     stringByReplacingOccurrencesOfString:@">" withString:@""]
+//                                    
+//                                    stringByReplacingOccurrencesOfString:@" " withString:@""];
+//    
+//    NSLog(@"方式2：%@", deviceTokenString2);
+//    
+//    
+//}
+
+
+    
+    NSMutableString *tokenString = [self changeDeviceTokenToString:pToken];
+    
+    
+    if([[[NSUserDefaults standardUserDefaults]objectForKey:@"divcetoken"] isEqualToString:tokenString])
+        return;
+        
+    [[NSUserDefaults standardUserDefaults]setObject:@"divcetoken" forKey:tokenString];
+    
+    NSURLSessionConfiguration *con = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:con];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://114.215.83.1/apns/cer/MyCer/input.php"]];
+    request.HTTPMethod = @"POST";
+    
+    NSData *postBody = [[NSString stringWithFormat:@"token=%@",tokenString] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    [request setHTTPBody:postBody];
+    NSURLSessionDataTask *dask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        NSDictionary *d = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+        NSLog(@"jk  response :%@",d);
+    }];
+    [dask resume];
     //注册成功，将deviceToken保存到应用服务器数据库中
     
+}
+
+- (NSMutableString *)changeDeviceTokenToString:(NSData *)pToken{
+    NSMutableString *deviceTokenString1 = [NSMutableString string];
+    
+    const char *bytes = pToken.bytes;
+    
+    int iCount = pToken.length;
+    
+    for (int i = 0; i < iCount; i++) {
+        [deviceTokenString1 appendFormat:@"%02x", bytes[i]&0x000000FF];
+    }
+    return deviceTokenString1;
 }
 
 
@@ -63,24 +113,11 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
     // 处理推送消息
-//    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"通知" message:@"远程通知"  preferredStyle:UIAlertControllerStyleAlert];
-//    UIAlertAction *okaction = [UIAlertAction actionWithTitle:@"CLOSE" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-//        ;
-//    }];
-//    [alert addAction:okaction];
-//    [self.roo presentViewController:alert animated:NO completion:^{
-//        ;
-//    }];
     NSLog(@"i'm info%@", userInfo);
 }
-//- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
-//    
-//}
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     NSLog(@"Regist fail%@",error);
-    
-    
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

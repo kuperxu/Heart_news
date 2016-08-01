@@ -19,7 +19,7 @@ static HomeModel *once;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         once = [[HomeModel alloc]init];
-        [[AFNetworkReachabilityManager sharedManager] startMonitoring];
+        
     });
     
     return once;
@@ -60,7 +60,7 @@ static HomeModel *once;
     return [[AFHTTPSessionManager manager] GET:@"http://www.varpm.com:3002/v1/article/getBanner/" parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         ;
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"%@",[NSThread currentThread]);
+
         NSDictionary *dic = (NSDictionary *)responseObject;
         [self serializationDataWith:dic];
         if (block) {
