@@ -67,8 +67,6 @@
 //    
 //    
 //}
-
-
     
     NSMutableString *tokenString = [self changeDeviceTokenToString:pToken];
     
