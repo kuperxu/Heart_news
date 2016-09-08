@@ -30,6 +30,22 @@
     [super viewDidLoad];
 //    self.progress = [[LeafProgressView alloc]initWithFrame:CGRectMake(36, 200, 248, 35)];
 //    [self.view addSubview:_progress];
+    UIGestureRecognizer *gesture = self.navigationController.interactivePopGestureRecognizer;
+    gesture.enabled = NO;
+    //        UIView *gestureView = gesture.view;   也可以加在这个上面
+    //通过kvc获取属性的值，这个属性是通过runtime得到的。
+    NSArray *targetArray = [gesture valueForKey:@"_targets"];
+    id gesturRecoginzerTarget = [targetArray firstObject];
+    id navigationInteractiveTransition = [gesturRecoginzerTarget valueForKey:@"_target"];
+    
+    SEL handleTransition = NSSelectorFromString(@"handleNavigationTransition:");
+    
+    
+    UIPanGestureRecognizer *myGesture = [[UIPanGestureRecognizer alloc]initWithTarget:navigationInteractiveTransition action:handleTransition];
+    
+    //    gesture.delegate = self;
+    [self.view addGestureRecognizer:myGesture];
+    
     [self loadWebView];
     [self setupButton];
     [self addNavItem];
@@ -51,7 +67,7 @@
 //相应时间用户写评论
 - (void)addCommit:(id)sender{
     
-    UIButton *button =sender;
+    UIButton *button = sender;
     [button setEnabled:NO];
 //    添加一个蒙版视图
      maskView = ({
@@ -69,30 +85,40 @@
     [maskView addSubview:commitFiled];
     
     
-    [commitFiled mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.equalTo(maskView);
-        make.bottom.mas_equalTo(-49);
-        make.height.mas_equalTo(180);
-    }];
+//    [commitFiled mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.right.equalTo(maskView);
+//        make.bottom.mas_equalTo(-49);
+//        make.height.mas_equalTo(180);
+//    }];
+
+    commitFiled.frame = CGRectMake(0, [UIScreen mainScreen].bounds.size.height-200, [UIScreen mainScreen].bounds.size.width, 200);
     okButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [okButton setBackgroundColor:AUTHOR_COLOR];
     [okButton setTitle:@"确定" forState:UIControlStateNormal];
     [okButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [commitFiled addSubview:okButton];
-    [okButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.right.equalTo(commitFiled);
-        
-//        make.center.equalTo(commitFiled);
-        make.size.mas_equalTo(CGSizeMake(40, 25));
-    }];
+//    [okButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.right.equalTo(commitFiled);
+//        
+////        make.center.equalTo(commitFiled);
+//        make.size.mas_equalTo(CGSizeMake(40, 25));
+//    }];
+    [okButton setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width-60, 200-30, 40, 20)];
     okButton.layer.cornerRadius = 10;
     [okButton addTarget:self action:@selector(saveData) forControlEvents:UIControlEventTouchUpInside];
     
-    
+    [commitFiled becomeFirstResponder];
 //    [self.view sendSubviewToBack:web];
 }
 
 - (void)saveData{
+    [commitFiled removeFromSuperview];
+    
+    [maskView removeFromSuperview];
+    //    [maskView removeFromSuperview];
+    //减少使用
+    [rightButton setEnabled:YES];
+    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask, YES);
     NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:[NSString stringWithFormat:@"commit.archiver"]];
     
@@ -113,14 +139,15 @@
 - (void)setupButton{
     UIButton *topButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [web addSubview:topButton];
-    [topButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGPointMake(40, 40));
-        make.right.mas_equalTo(20);
-        make.bottom.mas_equalTo(-69);
-    }];
+//    [topButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.size.mas_equalTo(CGPointMake(40, 40));
+//        make.right.mas_equalTo(20);
+//        make.bottom.mas_equalTo(-69);
+//    }];
+    topButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width-50, [UIScreen mainScreen].bounds.size.height-50, 30, 30);
     topButton.backgroundColor = [UIColor clearColor];
     [topButton setImage:[UIImage imageNamed:@"top"] forState:UIControlStateNormal];
-    topButton.layer.cornerRadius = 20;
+    topButton.layer.cornerRadius = 15;
     topButton.layer.borderColor = TAB_COLOR.CGColor;
     topButton.layer.borderWidth = 2;
 //    [topButton setTitle:@"查询" forState:UIControlStateNormal];
@@ -221,7 +248,7 @@
 #pragma textview delegate
 - (void)textViewDidBeginEditing:(UITextView *)textView{
 //    CGRect frame = textView.frame;
-    int offset = 226;//键盘高度216
+    int offset = 216;//键盘高度216
     
     NSTimeInterval animationDuration = 0.30f;
     [UIView beginAnimations:@"ResizeForKeyboard" context:nil];

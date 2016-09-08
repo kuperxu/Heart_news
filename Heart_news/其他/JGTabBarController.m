@@ -28,10 +28,11 @@
 
 
 -(void)viewDidLoad{
-
+    
 //    jiashangle 
     [super viewDidLoad];
     [self.tabBar setTintColor:TAB_COLOR];
+    [UITabBar appearance].translucent = YES;
     NSString *bundledPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"CustomPathImages"];
     [[SDImageCache sharedImageCache] addReadOnlyCachePath:bundledPath];
     
@@ -78,7 +79,7 @@
 //      NSFontAttributeName,
 //      nil]];
 
-//    设置返回键颜色
+//    设置返回键颜色--不会影响
     [nav.navigationBar setTintColor:[UIColor grayColor]];
     
     controller.title = tittle;//这句代码相当于上面两句代码

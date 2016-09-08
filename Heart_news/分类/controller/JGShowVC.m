@@ -70,11 +70,11 @@ NSInteger pagec;
     _table.dataSource = self;
     _table.estimatedRowHeight = 40;
     _table.rowHeight = UITableViewAutomaticDimension;
-    
+    _table.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
     [self.view addSubview:_table];
     [_table mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 0, 49, 0));
+        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(-64, 0, 49, 0));
     }];
     //    [_table.tableHeaderView addSubview:_refreshControl];
     

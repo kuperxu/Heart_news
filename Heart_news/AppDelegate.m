@@ -25,7 +25,7 @@
     self.window.rootViewController = [[JGTabBarController alloc] init];
     [self.window makeKeyAndVisible];
     
-    
+    self.window.backgroundColor = [UIColor whiteColor];
 //    [[UINavigationBar appearance] setBarTintColor:BACKGROUND_COLOR];
 //    [[UIApplication sharedApplication] registerForRemoteNotificationTypes: UIRemoteNotificationTypeBadge |UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert];
     if([[[UIDevice currentDevice]systemVersion]floatValue] >=8.0)

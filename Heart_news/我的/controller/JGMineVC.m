@@ -56,7 +56,7 @@
 }
 
 - (void)login{
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"文本对话框" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"用户登陆" message:nil preferredStyle:UIAlertControllerStyleAlert];
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField){
         textField.placeholder = @"登录";
     }];

@@ -125,10 +125,12 @@ NSInteger page;
     table.dataSource = self;
     table.estimatedRowHeight = 40;
     table.rowHeight = UITableViewAutomaticDimension;
-    
+#warning need anther huadong lan
+    table.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     [self.view addSubview:table];
     [table mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(64, 0, 49, 0));
+//        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(64, 0, 49, 0));
+        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 0, 49, 0));
     }];
     
     // 设置回调（一旦进入刷新状态，就调用target的action，也就是调用self的loadNewData方法）

@@ -51,6 +51,15 @@
     
     // iOS7以后,导航控制器中scollView顶部会添加64的额外滚动区域
     self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    UIView *maskView = ({
+        UIView *view = [UIView new];
+        view.backgroundColor = [UIColor whiteColor];
+        view.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 44);
+        
+        view;
+    });
+    [self.view addSubview:maskView];
 }
 
 
