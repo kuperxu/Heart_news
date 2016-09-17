@@ -40,11 +40,10 @@
     
     SEL handleTransition = NSSelectorFromString(@"handleNavigationTransition:");
     
-    
     UIPanGestureRecognizer *myGesture = [[UIPanGestureRecognizer alloc]initWithTarget:navigationInteractiveTransition action:handleTransition];
     
     //    gesture.delegate = self;
-    [self.view addGestureRecognizer:myGesture];
+    [self.view addGestureRecognizer:gesture];
     
     [self loadWebView];
     [self setupButton];

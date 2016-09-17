@@ -170,7 +170,6 @@
     }else{
         [self.contentImageView sd_setImageWithURL:nil placeholderImage:unload];
     }
-    NSLog(@"状态%hhd",mgr.isReachableViaWiFi);
     //    [self.contentImageView sd_setImageWithURL:[NSURL URLWithString:_model.image] placeholderImage:nil];
     self.tagLabel.text = [NSString stringWithFormat:@" %@ ",_model.tags[0]];
     self.viewLabel.text = [NSString stringWithFormat:@" 阅读 %@",_model.view];

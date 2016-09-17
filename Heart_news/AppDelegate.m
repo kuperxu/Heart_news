@@ -38,13 +38,14 @@
         
         [[UIApplication sharedApplication]registerForRemoteNotifications];
         
-    }else{
-        //这里还是原来的代码
-        //注册启用push
-        [[UIApplication sharedApplication]registerForRemoteNotificationTypes:
-         (UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge)];
-        
     }
+//    else{
+//        //这里还是原来的代码
+//        //注册启用push
+//        [[UIApplication sharedApplication]registerForRemoteNotificationTypes:
+//         (UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge)];
+//        
+//    }
     return YES;
 }
 

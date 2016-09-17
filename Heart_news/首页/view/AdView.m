@@ -286,7 +286,7 @@
     
     if (PageControlShowStyle == UIPageControlShowStyleLeft)
     {
-        _pageControl.frame = CGRectMake(0, kAdViewHeight - 20, 20*_pageControl.numberOfPages, 20);
+        _pageControl.frame = CGRectMake(10, kAdViewHeight - 20, 20*_pageControl.numberOfPages, 20);
         
     }
     else if (PageControlShowStyle == UIPageControlShowStyleCenter)
